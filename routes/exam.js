@@ -4,7 +4,7 @@
 const Router = require('koa-router');
 var router = new Router({
   //路由前缀
-	prefix: './exam'
+	prefix: '/exam'
 });
 
 const exam = require('../controllers/exam');

@@ -3,7 +3,7 @@
 const Router = require('koa-router');
 var router = new Router({
   //路由前缀
-	prefix: './user'
+	prefix: '/user'
 });
 
 const user = require('../controllers/user');

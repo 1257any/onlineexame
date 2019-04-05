@@ -3,7 +3,7 @@ import * as URL from '@components/interfaceURL.js'
 
 //用户登录
 export const axiosLogin = function(params,success,error){
-  axios.get(URL.login,{
+  axios.post(URL.login,{
     params:{
       className : params.className,
       loginType : params.loginType,
