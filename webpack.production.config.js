@@ -6,6 +6,7 @@ var autoprefixer = require('autoprefixer');
 var OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 module.exports = {
+  // devtool: 'eval-source-map',
   entry: {
     app: path.resolve(__dirname, './src/index.js'),
     // 将 第三方依赖 单独打包
