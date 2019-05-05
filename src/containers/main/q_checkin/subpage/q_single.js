@@ -44,17 +44,17 @@ class QSingle extends React.Component {
 
         //提交题目信息
         httpServer({
+          method:'post',
           url : URL.q_checkin
         },{
-          className : 'QuestionInfoServiceImpl',
-          gradeId : this.props.level,
-          pointId : values.knowledgePoint,
-          questionstem : values.tigan,
+          gradeId : this.props.level,//等级
+          pointId : values.knowledgePoint,//知识点
+          questionstem : values.tigan,//题干
           imageSrc : '',
-          type : 2,
-          answer : this.state.rightAnswer,
-          choice : choice,
-          choiceType : 0
+          type : 0,//题目类型
+          answer : this.state.rightAnswer,//正确答案
+          choice : choice, //选项
+          // subject:       //科目
         })
 
       }

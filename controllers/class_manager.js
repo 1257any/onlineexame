@@ -173,7 +173,7 @@ exports.change_class = async function(ctx, next){
 		// console.log('a'+JSON.stringify(data.params.managerId));
 		console.log('content'+data.content)
 		const results = await query(
-            `update class set  class_name='${data.class_Name}', exam_subject ='${data.subject_name}',exam_subject_id='${data.subjectId}' where
+            `update class set  class_name='${data.class_Name}', exam_subject ='${data.subject_name}' where
 			  class_id= '${data.classId}'`
         );
         console.log("result",JSON.stringify(results));
@@ -191,6 +191,11 @@ exports.change_class = async function(ctx, next){
     }
 		connection.end();
   }catch(e){
+	console.log('[/user/login] error:', e.message, e.stack);
+	ctx.body = {
+		respCode: e.code || -1,
+		respMsg: e.message
+	};
   }
 };
 

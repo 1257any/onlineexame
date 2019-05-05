@@ -38,6 +38,12 @@ module.exports = {
         exclude : /node_modules/
       },
       {
+        use : {
+          loader : "less-loader"
+        },
+        exclude : /node_moduls/
+      },
+      {
         test : /\.css$/,
         use : [
         {

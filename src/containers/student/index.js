@@ -21,6 +21,8 @@ import homepage from './homepage/index.js';
 import onlineexam from './onlineexam/index.js';
 //修改密码
 import changepwd from './changepwd/index.js';
+//查看成绩
+import search_grade from './search_grade/index.js';
 
 import httpServer from '@components/httpServer.js'
 import * as URL from '@components/interfaceURL.js'
@@ -132,6 +134,7 @@ class Student extends React.Component {
 		                   </Menu.Item>
 							<SubMenu key="student_manage" title={<span><Icon type="usergroup-add" /><span>个人中心</span></span>}>
 									<Menu.Item key="changepwd"><Link to="/student/changepwd">修改密码</Link></Menu.Item>
+									<Menu.Item key="search_grade"><Link to="/student/search_grade">查看成绩</Link></Menu.Item>
 							</SubMenu>
 		        </Menu>
 		      </div>
@@ -149,7 +152,9 @@ class Student extends React.Component {
 						
 							{/* 个人中心 */}
 							<Route path="/student/changepwd" component={changepwd}/>
-                            
+              
+							{/* 查看成绩 */}
+							<Route path="/student/search_grade" component={search_grade}/>
 
 						</Switch>
                </div>

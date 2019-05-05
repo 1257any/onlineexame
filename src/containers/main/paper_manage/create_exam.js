@@ -22,48 +22,97 @@ class CreateExam extends React.Component {
       classId : 0,
       levelId : 0,
       paperIdList : [],
+      classArr:[]
     }
+    
     this.havePaperName = 0;
   }
 
   //选择班级
-  handleChange(value) {
-    this.classId = value;
-    this.havePaperName ++;
-    if(this.havePaperName == 2) {
-      this.havePaperName = 0;
-      httpServer({
-        url : URL.get_paperId
-      },{
-        className : 'GetPaperIdImpl',
-        classId : this.classId,
-        gradeId : this.levelId,
-      })
-      .then((res)=>{
-        let respData = res.data.data;
-        this.setState({paperIdList : respData})
-      })
-    }
-  }
+  // handleChange(value) {
+  //   this.classId = value;
+  //   this.havePaperName ++;
+  //   if(this.havePaperName == 2) {
+  //     this.havePaperName = 0;
+  //     httpServer({
+  //       method:'post',
+  //       url : URL.get_paperId
+  //     },{
+  //       className : 'GetPaperIdImpl',
+  //       classId : this.classId,
+  //       gradeId : this.levelId,
+  //     })
+  //     .then((res)=>{
+  //       let respData = res.data.data;
+  //       this.setState({paperIdList : respData})
+  //     })
+  //   }
+  // }
 
   //选择等级
-  changeLevel(value){
-    this.levelId = value;
-    this.havePaperName ++;
-    if(this.havePaperName == 2) {
-      this.havePaperName = 0;
-      httpServer({
-        url : URL.get_paperId
-      },{
-        className : 'GetPaperIdImpl',
-        classId : this.classId,
-        gradeId : this.levelId,
+  // changeLevel(value){
+  //   this.levelId = value;
+  //   this.havePaperName ++;
+  //   if(this.havePaperName == 2) {
+  //     this.havePaperName = 0;
+  //     httpServer({
+  //       method:'post',
+  //       url : URL.get_paperId
+  //     },{
+  //       className : 'GetPaperIdImpl',
+  //       classId : this.classId,
+  //       gradeId : this.levelId,
+  //     })
+  //     .then((res)=>{
+  //       let respData = res.data.data;
+  //       this.setState({paperIdList : respData})
+  //     })
+  //   }
+  // }
+  classSelect(){
+
+  }
+
+  componentWillMount(){
+    //获取班级
+    httpServer({
+      method:'get',
+      url : URL.get_class_info
+    },{
+    })
+    .then((res)=>{
+      let class_info=[];
+      console.log(res.data.data)
+      res.data.data.forEach((item)=>{
+        // console.log('item',item)
+        class_info.push(item.class_name)
       })
-      .then((res)=>{
-        let respData = res.data.data;
-        this.setState({paperIdList : respData})
+      this.setState({classArr : class_info})
+      console.log('classArr'+this.state.classArr)
+    })
+    //获取试卷id
+    httpServer({
+      method:'post',
+      url : URL.get_stu_papers
+    },{
+    })
+    .then((res)=>{
+      let paper_info=[];
+      let arr = [];
+      // console.log(res.data.data)
+      res.data.data.forEach((item)=>{
+        // console.log('item',item)
+        arr.push(item.paper_exam_id)
       })
-    }
+      let paper_arr= Array.from(new Set(arr))
+      console.log('paper_arr'+paper_arr);
+      paper_arr.forEach((item)=>{
+        // console.log('item',item)
+        paper_info.push(item)
+      })
+      this.setState({paperIdList : paper_info})
+      console.log('paperIdList'+ this.state.paperIdList)
+    })
   }
 
   //表单提交
@@ -72,9 +121,9 @@ class CreateExam extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         httpServer({
+          method:'post',
           url : URL.create_exam
         },{
-          className : 'CreateTestImpl',
           classId : values.classId,
           paperId : values.paperId,
           startTime : values.startTime.format('YYYY-MM-DD HH:mm:ss'),
@@ -101,10 +150,10 @@ class CreateExam extends React.Component {
 
     //班级信息
     let classtArr = [];
-    if(this.props.classinfo.classArr) {
-      classtArr = this.props.classinfo.classArr.map((item)=>{
+    if(this.state.classArr) {
+      classtArr = this.state.classArr.map((item)=>{
         return (
-          <Option value={item.classId} key={item.classId}>{item.className}</Option>
+          <Option value={item} key={item}>{item}</Option>
         )
       })
     }
@@ -127,7 +176,7 @@ class CreateExam extends React.Component {
               label="班级"
             >
               {getFieldDecorator('classId')(
-                <Select style={{ width: '100%' }} onChange={this.handleChange.bind(this)}>
+                <Select style={{ width: '100%' }} onChange = {this.classSelect.bind(this)}>
                   {classtArr}
                 </Select>
               )}
@@ -141,7 +190,7 @@ class CreateExam extends React.Component {
                 <Input />
               )}
             </FormItem>
-            <FormItem
+            {/* <FormItem
               {...formItemLayout}
               label="级别"
             >
@@ -152,7 +201,7 @@ class CreateExam extends React.Component {
                   <Option value={3}>高级</Option>
                 </Select>
               )}
-            </FormItem>
+            </FormItem> */}
             <FormItem
               {...formItemLayout}
               label="试卷编号"

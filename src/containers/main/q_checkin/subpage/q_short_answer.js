@@ -1,3 +1,9 @@
+
+
+
+
+
+
 //单选题
 import React from 'react';
 import ReactDOM from 'react-dom'
@@ -28,14 +34,14 @@ class QShortAnswer extends React.Component {
 
         //提交题目信息
         httpServer({
+          method:'post',
           url : URL.q_checkin
         },{
-          className : 'QuestionInfoServiceImpl',
           gradeId : this.props.level,
           pointId : values.knowledgePoint,
           questionstem : values.tigan,
-          imageSrc : '',
-          type : 5,
+          answer:null,
+          type : 4,
         })
 
       }

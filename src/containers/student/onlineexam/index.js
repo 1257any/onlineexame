@@ -1,319 +1,317 @@
+
 import React from 'react'
+
+import { Radio, Row, Col, Input, Icon, Divider, Button, Card, Tag, InputNumber, Checkbox } from 'antd'
+import RadioGroup from 'antd/lib/radio/group'
 import BreadcrumbCustom from '@components/BreadcrumbCustom'
-import { Form } from 'antd';
-import {Row,Col,Select,Input,Table, Icon, Divider,Button,Modal,message} from 'antd'
-const Option = Select.Option;
-const Search = Input.Search;
-const FormItem = Form.Item;
-const confirm = Modal.confirm;
-
-import httpServer from '@components/httpServer.js';
-import { connect } from 'react-redux'
+import httpServer from '@components/httpServer.js'
 import * as URL from '@components/interfaceURL.js'
+const CheckboxGroup = Checkbox.Group;
+const { TextArea } = Input;
+import './index.css'
+// const RadioGroup = Radio.Group;
 
-class QueryClass extends React.Component {
-  constructor(){
+export default class creact_paper extends React.Component {
+  constructor() {
     super()
     this.state = {
-      selectedRowKeys : [], //选择的行
-      data : [],
-      pagination : {
-        pageSize : 10,
-        current : 1,
-        total : 0,
-        defaultCurrent : 1,
-      },
-      visibleChangeModal : false,//修改框是否显示
-      curSelectClass : {//当前所选的班级
-        classId : 1,
-        className : "西脱1711",
-        key : 1,
-        statusId : 1,
-        statusName : "未毕业",
-        subjectId : 2,
-        subjectName : "Web前端"
-      },
+      allQuestion: [],
+      questionTypeList: ['单选题', '多选题', '判断题', '填空题', '程序题'],
+      currentQuestion: {},
+      index: 0,//当前项的下标,
+      radio_value: '',
+      Checkbox_values: '',
+      TF_values: '',
+      fill_valuse: '',
+      endTime: '2019-5-2 22:59:00',
+      answer: [],
+      hour: '',
+      min: '',
+      sec: '',
+      paper_id: '',
+      stu_id: ''
     }
-    this.searchKey = "1";//默认按照班级搜索  1班级 2科目  3状态
-    this.turnStatus = "NORMAL"; //NORMAL:正常翻页   SEARCH:搜索翻页
-    this.searchContent = ""; //搜索内容
   }
 
-  //得到一页数据
-  getPageDate(){
+
+  //考试倒计时
+  timer() {
+    console.log('test')
+    let tfunctjion = window.setInterval(() => {
+      let timeLast = new Date(this.state.endTime).getTime() - new Date().getTime();
+      // console.log("timeLast" + timeLast);
+      // console.log('hour'+this.state.e)
+      let hour = parseInt(timeLast / (1000 * 60 * 60));
+      let min = parseInt((timeLast % (1000 * 60 * 60)) / (1000 * 60));
+      let sec = parseInt(((timeLast % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
+      // console.log('hour'+hour);
+      let Nhour = hour < 10 ? '0' + hour : hour;
+      this.setState({ hour: Nhour });
+      // console.log('sethour'+this.state.hour)
+      let Nmin = min < 10 ? '0' + min : min;
+      this.setState({ min: Nmin });
+      // console.log('sethour'+this.state.min)
+      let Nsec = sec < 10 ? '0' + sec : sec;
+      this.setState({ sec: Nsec });
+      if (this.state.hour == 0 && this.state.min == 0 && this.state.sec == 0) {
+        window.clearInterval(tfunctjion);
+        this.submitPaper();
+      }
+    }, 1000)
+  }
+  componentWillMount() {
+    let username = localStorage.userName;
     httpServer({
-      url : URL.get_class
-    },{
-      className : 'ClassServiceImpl',
-      page : this.state.pagination.current,
-      rows : this.state.pagination.pageSize,
-      type : 1,
-    })
-    .then((res)=>{
-      const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-
-        let statusName = res.data.data[i].status == '0' ? '已毕业' : '未毕业';
-        let subjectName = "";
-        this.props.subjectinfo.subjectArr.some((item)=>{
-          if(item.subjectid == res.data.data[i].subjectId) {
-            subjectName = item.subjectname;
-            return true;
-          }
-          return false;
-        })
-
-        data.push({
-          key: res.data.data[i].classId,
-          className: res.data.data[i].className,
-          classId : res.data.data[i].classId,
-          subjectName : subjectName,
-          subjectId : res.data.data[i].subjectId,
-          statusName: statusName,
-          statusId: res.data.data[i].status
-        });
-      }
-
-      this.state.pagination.total = res.data.total;
-
-      this.setState({
-        data:data,
-        pagination : this.state.pagination
+      method: 'post',
+      url: URL.get_question
+    }, {
+        username: username
       })
-    })
+      .then((res) => {
+        console.log("questionres" + JSON.stringify(res.data.allquestion[0]))
+        this.setState({
+          allQuestion: res.data.allquestion,
+          currentQuestion: res.data.allquestion[0],
+          endTime: res.data.endtime,
+          paper_id: res.data.paper_exam_id,
+          stu_id: res.data.stu_id
+        })
+        console.log('stest' + JSON.stringify(this.state.currentQuestion))
+      })
+    // this.state.currentQuestion = this.state.allQuestion[0];
+    this.timer();
   }
 
-  //得到搜索的数据
-  getSearchData(){
+  // 点击下一题
+  clickNext() {
+    // console.log('curindex' + this.state.index + 'total' + this.state.allQuestion.length);
+    if (this.state.index < this.state.allQuestion.length - 1) {
+      this.setState({ currentQuestion: this.state.allQuestion[this.state.index + 1] })
+      this.setState({ index: this.state.index + 1 })
+    }
+
+  };
+  //单选题
+  OR_Change(e) {
+    // console.log("OR_values" + JSON.stringify(e))
+    // console.log("test");
+
+    console.log('radio_value' + this.state.radio_value)
+    let index = this.state.index;
+    let answer_OR = {};
+    answer_OR.answer = e.target.value;
+    answer_OR.qusetion_id = this.state.allQuestion[index].id;
+    answer_OR.content = this.state.allQuestion[index].question;
+    answer_OR.question_type = this.state.allQuestion[index].question_type;
+    answer_OR.paper_id = this.state.paper_id;
+    answer_OR.stu_id = this.state.stu_id;
+    console.log("answer_OR" + JSON.stringify(answer_OR))
+    this.setState(
+      {
+        answer: [...this.state.answer, answer_OR],
+        radio_value: e.target.value
+      }, () => {
+        console.log("answer" + JSON.stringify(this.state.answer));
+        // console.log('加载完成')
+      }
+    )
+    // console.log('answer'+JSON.stringify(this.state.answer))
+  };
+  //复选框
+  MR_onChange(e) {
+    let answer_OR = {};
+    let choice_values = ['A', 'B', 'C', 'D', 'C'];
+      answer_OR.answer = '';
+    e.map((e_item, eindex) => {
+      this.state.currentQuestion.choice.map((item, index) => {
+        if (item == e_item) {
+          answer_OR.answer = choice_values[index] + answer_OR.answer
+        }
+      })
+    })
+
+    let index = this.state.index;
+    answer_OR.qusetion_id = this.state.allQuestion[index].id;
+    answer_OR.content = this.state.allQuestion[index].question;
+    answer_OR.question_type = this.state.allQuestion[index].question_type;
+    answer_OR.paper_id = this.state.paper_id;
+    answer_OR.stu_id = this.state.stu_id;
+    this.setState(
+      {
+        answer: [...this.state.answer, answer_OR]
+      }, () => {
+        console.log("MR_values" + JSON.stringify(this.state.answer));
+        // console.log('加载完成')
+      }
+    )
+
+    // this.setState({ Checkbox_values: e })
+  }
+  //判断题
+  TF_onChange(e) {
+    console.log("TF_values" + JSON.stringify(e));
+    let index = this.state.index;
+    let answer_OR = {};
+    answer_OR.answer = e.target.value;
+    answer_OR.qusetion_id = this.state.allQuestion[index].id;
+    answer_OR.content = this.state.allQuestion[index].question;
+    answer_OR.question_type = this.state.allQuestion[index].question_type;
+    answer_OR.paper_id = this.state.paper_id;
+    answer_OR.stu_id = this.state.stu_id;
+    this.setState(
+      {
+        answer: [...this.state.answer, answer_OR]
+      }, () => {
+        console.log("answer" + JSON.stringify(this.state.answer));
+        // console.log('加载完成')
+      }
+    )
+    this.setState({ TF_values: e.target.value })
+  }
+  //填空题
+  Fill_onchange(e) {
+    // console.log("fill_values"+JSON.stringify(e));
+    let index = this.state.index;
+    let answer_OR = {};
+    answer_OR.answer = e.target.value;
+    answer_OR.qusetion_id = this.state.allQuestion[index].id;
+    answer_OR.content = this.state.allQuestion[index].question;
+    answer_OR.question_type = this.state.allQuestion[index].question_type;
+    answer_OR.paper_id = this.state.paper_id;
+    answer_OR.stu_id = this.state.stu_id;
+    this.setState(
+      {
+        answer: [...this.state.answer, answer_OR]
+      }, () => {
+        console.log("answer" + JSON.stringify(this.state.answer));
+        // console.log('加载完成')
+      }
+    )
+    this.setState({ fill_valuse: e.target.value })
+  }
+  //程序题
+  Pro_change(e) {
+    let index = this.state.index;
+    let answer_OR = {};
+    answer_OR.answer = e.target.value;
+    answer_OR.qusetion_id = this.state.allQuestion[index].id;
+    answer_OR.content = this.state.allQuestion[index].question;
+    answer_OR.question_type = this.state.allQuestion[index].question_type;
+    answer_OR.paper_id = this.state.paper_id;
+    answer_OR.stu_id = this.state.stu_id;
+    this.setState(
+      {
+        answer: [...this.state.answer, answer_OR]
+      }, () => {
+        console.log("answer" + JSON.stringify(this.state.answer));
+        // console.log('加载完成')
+      }
+    )
+    console.log("pro_values" + e.target.value)
+  }
+  //提交试卷
+  submitPaper() {
+    // console.log(("answer"+JSON.stringify(this.state.state)),
     httpServer({
-      url : URL.search_class
-    },{
-      className : 'ClassServiceImpl',
-      content : this.searchContent,
-      searchType : this.searchKey,
-      page : this.state.pagination.current,
-      rows : this.state.pagination.pageSize,
-      type : 1
-    })
-    .then((res)=>{
-      const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-        let statusName = res.data.data[i].status == '0' ? '已毕业' : '未毕业';
-        let subjectName = "";
-        this.props.subjectinfo.subjectArr.some((item)=>{
-          if(item.subjectid == res.data.data[i].subjectId) {
-            subjectName = item.subjectname;
-            return true;
-          }
-          return false;
-        })
-
-        data.push({
-          key: res.data.data[i].classId,
-          className: res.data.data[i].className,
-          classId : res.data.data[i].classId,
-          subjectName : subjectName,
-          subjectId : res.data.data[i].subjectId,
-          statusName: statusName,
-          statusId: res.data.data[i].status
-        });
-      }
-      this.state.pagination.total = res.data.total;
-
-      this.setState({
-        data:data,
-        pagination : this.state.pagination
+      method: 'post',
+      url: URL.paper_answer
+    }, {
+        answer: JSON.stringify(this.state.answer),
       })
-
-    })
-  }
-
-  //翻页
-  handleTableChange(pagination, filters, sorter){
-    const pager = this.state.pagination;
-    pager.current = pagination.current;
-    pager.pageSize = pagination.pageSize;
-    this.setState({
-      pagination: pager,
-    });
-    if(this.turnStatus === "NORMAL") {
-      this.getPageDate();
-    }
-    else {
-      this.getSearchData();
-    }
-
-  }
-
-  componentWillMount(){
-    this.getPageDate();
-  }
-
-  //删除班级
-  deleteClass(record){
-    confirm({
-      title: '你确定删除吗？',
-      okText : '确定',
-      cancelText : '取消',
-      onOk:()=>{
-        httpServer({
-          url : URL.delete_class
-        },{
-          className : 'ClassServiceImpl',
-          type : 4,
-          classId : record.classId
+      .then((res) => {
+        this.setState({
+          // allQuestion: res.data,
+          // currentQuestion: res.data[0],
         })
-        .then((res)=>{
-          this.getPageDate();//重新获取第一页
-        })
-      },
-    });
 
-  }
-
-  //点击修改班级
-  changeClass(record){
-    this.setState({curSelectClass : record})
-    const {form}=this.props;
-    //重新设置修改模态框中三个选项的值
-    form.setFieldsValue({'className': this.state.curSelectClass.className});
-    form.setFieldsValue({'subject': this.state.curSelectClass.subjectId});
-    form.setFieldsValue({'status': this.state.curSelectClass.statusId});
-    this.setState({visibleChangeModal:true})
-  }
-
-  //取消修改
-  changeCancel(){
-    this.setState({visibleChangeModal:false})
-  }
-
-  //确认修改
-  changeOk(){
-    this.setState({visibleChangeModal:false})
-
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        httpServer({
-          url : URL.change_class
-        },{
-          className : "ClassServiceImpl",
-          type : 3,
-          subjectId : values.subject,
-          name : values.className,
-          classId : this.state.curSelectClass.classId,
-          status : values.status,
-        })
-      }
-    });
-
-  }
-
-  //搜索类型选择
-  handleChange(value) {
-    this.searchKey = value;
-  }
-
-  //点击所有班级
-  showAllClass(){
-    this.turnStatus === "NORMAL";
-    this.state.pagination.current = 1;//当前页置为第一页
-    this.getPageDate();
-  }
-
-  //点击搜索
-  searchClass(value) {
-    if(value == "") {
-      Modal.error({
-        content: "搜索内容不能为空！",
-        okText : '确定'
-      });
-      return;
-    }
-    this.turnStatus = "SEARCH";//把翻页状态置为搜索
-    this.state.pagination.current = 1;//当前页置为第一页
-    this.setState({pagination : this.state.pagination});
-    this.searchContent = value;
-    this.getSearchData();
-  }
-
-  //选择某一行
-  onSelectChange(selectedRowKeys) {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
-    this.setState({ selectedRowKeys });
-  }
-
-  render(){
-    const { getFieldDecorator } = this.props.form;
-
-    const columns = [{
-      title: '班级',
-      dataIndex: 'className',
-      key: 'className',
-    }, {
-      title: '科目',
-      dataIndex: 'subjectName',
-      key: 'subjectName',
-    }, {
-      title: '状态',
-      dataIndex: 'statusName',
-      key: 'statusName',
-    }, {
-      title: '操作',
-      key: 'action',
-      render: (text, record) => (
-        <span>
-          <Button type="danger" size="small" onClick={this.deleteClass.bind(this,record)}>删除</Button>
-          <Divider type="vertical" />
-          <Button size="small" onClick={this.changeClass.bind(this,record)}>修改</Button>
-        </span>
-      ),
-    }];
-
-    //行选择
-    const rowSelection = {
-      selectedRowKeys : this.state.selectedRowKeys,
-      onChange: this.onSelectChange.bind(this),
-    };
-
-    let localeObj = {
-      emptyText: '暂无数据'
-    }
-    //表单布局
-    const formItemLayout = {
-      labelCol: {
-        xs: { span: 24 },
-        sm: { span: 4 , offset : 4},
-      },
-      wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 8 },
-      },
-    };
-
-    //科目信息
-    let subjectArr = [];
-    if(this.props.subjectinfo.subjectArr) {
-      subjectArr = this.props.subjectinfo.subjectArr.map((item)=>{
-        return (
-          <Option value={item.subjectid} key={item.subjectid}>{item.subjectname}</Option>
-        )
       })
-    }
+  }
+  //获得单选框
+  get_radio(radioData) {
+    let radioStyle = {
+      display: 'block',
+      height: '30px',
+      lineHeight: '30px',
+    };
+    let RadioG = [];
+    let radio_value = ['A', 'B', 'C', "D"]
+    radioData.map((item, index) => {
+      RadioG.push(<Radio key={radio_value[index]} style={radioStyle} value={radio_value[index]}>{item}</Radio>)
+    })
+    return RadioG;
+  }
 
-    return(
-     <div classsName = "exam-card">
-        div 
-     </div>
+  get_question() {
+    if (this.state.index <= this.state.allQuestion.length - 1) {
+      let question = this.state.currentQuestion;
+      // console.log('question'+JSON.stringify(question))
+      switch (question.question_type) {
+        //单选题
+        case '0':
+          return (<div>
+            <div>{question.question}</div>
+            <RadioGroup onChange={this.OR_Change.bind(this)} value={this.state.radio_value} >
+              {this.get_radio(question.choice)}
+            </RadioGroup>
+          </div>)
+          break;
+        //多选题
+        case '1':
+          return (
+            <div className='check'>
+              <div>{question.question}</div>
+              <CheckboxGroup options={question.choice} onChange={this.MR_onChange.bind(this)} />
+            </div>
+          )
+
+          break;
+        //判断题
+        case '2':
+          return (<div>
+            <div>{question.question}</div>
+            <RadioGroup onChange={this.TF_onChange.bind(this)} value={this.state.TF_values}>
+              <Radio value={0}>正确</Radio>
+              <Radio value={1}>错误</Radio>
+            </RadioGroup>
+          </div>);
+          break;
+        //填空题
+        case '3':
+          return (<div>
+            <div>{question.question}</div>
+            <Input placeholder='请输入正确答案' onBlur={this.Fill_onchange.bind(this)} />
+          </div>);
+          break;
+        //程序题
+        case '4':
+          return (<div>
+            <div>{question.question}</div>
+            <TextArea onBlur={this.Pro_change.bind(this)} />
+          </div>);
+          break;
+        default:
+          return (
+            <div>试卷已经做完，请交卷</div>);
+
+      }
+    } else {
+      return (
+        <div>试卷已经做完请提交，谢谢</div>
+      )
+    }
+  }
+  render() {
+    let { index, questionTypeList, currentQuestion } = this.state
+    return (
+      <div>
+        <div><Icon type="clock-circle" /><span>{this.state.hour}:{this.state.min}:{this.state.sec}</span><Button onClick={this.submitPaper.bind(this)} type="primary" className='submit_btn'>交卷</Button></div>
+        <Card className='cardPart' title={`第${index + 1}题   (${questionTypeList[currentQuestion.question_type]})`} bordered={false} style={{ width: '100%' }}>
+          {this.get_question()}
+          <Button onClick={this.clickNext.bind(this)} type="primary" block className='next_btn'>下一题</Button>
+        </Card>
+      </div>
+
     )
   }
 }
 
-function mapStateToProps(state) {
-    return {
-        subjectinfo: state.subjectinfo
-    }
-}
-
-export default connect(
-    mapStateToProps
-)(Form.create()(QueryClass))

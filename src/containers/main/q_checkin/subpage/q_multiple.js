@@ -44,14 +44,13 @@ class QMultiple extends React.Component {
 
         //提交题目信息
         httpServer({
-          url : URL.q_checkin
+          url : URL.q_checkin,
+          method:'post'
         },{
-          className : 'QuestionInfoServiceImpl',
           gradeId : this.props.level,
           pointId : values.knowledgePoint,
           questionstem : values.tigan,
-          imageSrc : '',
-          type : 2,
+          type : 1,
           answer : this.state.rightAnswer,
           choice : choice,
           choiceType : 1

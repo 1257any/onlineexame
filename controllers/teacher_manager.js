@@ -16,7 +16,7 @@ exports.add_teacher = async function(ctx, next){
 		const query = bluebird.promisify(connection.query.bind(connection));
 		const results = await query(
             // `insert  into class values('${data.name}','${data.classId}','${data.subjectId}','',null)`
-            `insert  into user values('0','${data.id}','${data.username}','${data.password}','${data.name}',null,null)`
+            `insert  into user values('1','${data.id}','${data.username}','${data.password}','${data.name}',null,null)`
         );
         // console.log("result"+JSON.stringify(results));
 		if(!results.length){
@@ -53,7 +53,7 @@ exports.query_teacher = async function(ctx, next){
 		// console.log('a'+JSON.stringify(data.params.managerId));
 		// console.log('para'+data.managerId)
 		const results = await query(
-            `select * from user`
+            `select * from user where user_type = '1' or user_type = '2'`
         );
         console.log("result",    JSON.stringify(results));
 		if(results.length){
@@ -88,7 +88,7 @@ exports.search_teacher = async function(ctx, next){
 		if(data.searchType == '1'){
 			 results = await query(
 				`select * from user where
-				name = like '%${data.content}%'`
+				username  like '%${data.content}%'`
 			);
 		}
 		if(data.searchType == '2'){
@@ -164,7 +164,7 @@ exports.change_teacher= async function(ctx, next){
 		// console.log('a'+JSON.stringify(data.params.managerId));
 		// console.log('content'+data.content)
 		const results = await query(
-            `update user set  name='${data.name}' id ='${data.id}' where
+            `update user set  username='${data.name}',id ='${data.id}' where
 			 id='${data.old_id}'`
         );
         console.log("result",JSON.stringify(results));
@@ -182,6 +182,11 @@ exports.change_teacher= async function(ctx, next){
     }
 		connection.end();
   }catch(e){
+	console.log('[/user/login] error:', e.message, e.stack);
+	ctx.body = {
+		respCode: e.code || -1,
+		respMsg: e.message
+	};
   }
 };
 

@@ -61,6 +61,8 @@ function errorState(response) {
 }
 
 const httpServer = (opts, data) => {
+  console.log("opts"+JSON.stringify(opts));
+  console.log("data"+JSON.stringify(data));
 
   let Public = { //公共参数
   }
@@ -114,6 +116,7 @@ const httpServer = (opts, data) => {
 
   let promise = new Promise(function(resolve, reject) {
     axios(httpDefaultOpts).then((res) => {
+      console.log("res"+JSON.stringify(res));
       successState(res)
       resolve(res)
     }).catch((response) => {

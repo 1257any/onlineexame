@@ -25,13 +25,6 @@ class QueryClass extends React.Component {
       },
       visibleChangeModal : false,//修改框是否显示
       curSelectClass : {//当前所选的班级
-        classId : 1,
-        className : "西脱1711",
-        key : 1,
-        statusId : 1,
-        statusName : "未毕业",
-        subjectId : 2,
-        subjectName : "Web前端"
       },
     }
     this.searchKey = "1";//默认按照班级搜索  1班级 2科目  3状态
@@ -42,7 +35,8 @@ class QueryClass extends React.Component {
   //得到一页数据
   getPageDate(){
     httpServer({
-      url : URL.get_class
+      url : URL.get_class,
+      method:'post'
     },{
       className : 'ClassServiceImpl',
       page : this.state.pagination.current,
@@ -50,27 +44,31 @@ class QueryClass extends React.Component {
       type : 1,
     })
     .then((res)=>{
+     
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-
-        let statusName = res.data.data[i].status == '0' ? '已毕业' : '未毕业';
+      for (let i = 0; i < res.data.results.length; i++) {
+        if(res.data.results[i].status === null){
+          let statusName = res.data.results[i].status='未毕业'
+        }else{
+          let statusName = res.data.results[i].status == '0' ? '已毕业' : '未毕业';
+        }
         let subjectName = "";
-        this.props.subjectinfo.subjectArr.some((item)=>{
-          if(item.subjectid == res.data.data[i].subjectId) {
-            subjectName = item.subjectname;
-            return true;
-          }
-          return false;
-        })
+        // this.props.subjectinfo.subjectArr.some((item)=>{
+        //   if(item.subjectid == res.data.results[i].subjectId) {
+        //     subjectName = item.subjectname;
+        //     return true;
+        //   }
+        //   return false;
+        // })
 
         data.push({
-          key: res.data.data[i].classId,
-          className: res.data.data[i].className,
-          classId : res.data.data[i].classId,
-          subjectName : subjectName,
-          subjectId : res.data.data[i].subjectId,
-          statusName: statusName,
-          statusId: res.data.data[i].status
+          key: res.data.results[i].class_id,
+          className: res.data.results[i].class_name,
+          classId : res.data.results[i].class_id,
+          subjectName : res.data.results[i].exam_subject,
+          subjectId : res.data.results[i].exam_subject_id,
+          statusName: res.data.results[i].status,
+          statusId: res.data.results[i].status_id
         });
       }
 
@@ -82,10 +80,11 @@ class QueryClass extends React.Component {
       })
     })
   }
-
+  
   //得到搜索的数据
   getSearchData(){
     httpServer({
+      method:'post',
       url : URL.search_class
     },{
       className : 'ClassServiceImpl',
@@ -97,25 +96,30 @@ class QueryClass extends React.Component {
     })
     .then((res)=>{
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-        let statusName = res.data.data[i].status == '0' ? '已毕业' : '未毕业';
+      for (let i = 0; i < res.data.results.length; i++) {
+        if(res.data.results[i].status===null){
+          let statusName = '未毕业'
+        }else{
+          let statusName = res.data.results[i].status == '0' ? '已毕业' : '未毕业';
+        }
+      
         let subjectName = "";
-        this.props.subjectinfo.subjectArr.some((item)=>{
-          if(item.subjectid == res.data.data[i].subjectId) {
-            subjectName = item.subjectname;
-            return true;
-          }
-          return false;
-        })
+        // this.props.subjectinfo.subjectArr.some((item)=>{
+        //   if(item.subjectid == res.data.results[i].subjectId) {
+        //     subjectName = item.subjectname;
+        //     return true;
+        //   }
+        //   return false;
+        // })
 
         data.push({
-          key: res.data.data[i].classId,
-          className: res.data.data[i].className,
-          classId : res.data.data[i].classId,
-          subjectName : subjectName,
-          subjectId : res.data.data[i].subjectId,
-          statusName: statusName,
-          statusId: res.data.data[i].status
+          key: res.data.results[i].class_id,
+          className: res.data.results[i].class_name,
+          classId : res.data.results[i].class_id,
+          subjectName : res.data.results[i].exam_subject,
+          subjectId : res.data.results[i].exam_subject_id,
+          statusName: res.data.results[i].status,
+          statusId: res.data.results[i].status_id
         });
       }
       this.state.pagination.total = res.data.total;
@@ -146,7 +150,15 @@ class QueryClass extends React.Component {
   }
 
   componentWillMount(){
-    this.getPageDate();
+    if(localStorage.user_type === '1'){
+      return Modal.error({
+        title: '系统提示',
+        content: '你没有权限',
+        okText : '确定'
+      }); 
+    }else{
+      this.getPageDate();
+    }
   }
 
   //删除班级
@@ -157,9 +169,9 @@ class QueryClass extends React.Component {
       cancelText : '取消',
       onOk:()=>{
         httpServer({
+          method:'post',
           url : URL.delete_class
         },{
-          className : 'ClassServiceImpl',
           type : 4,
           classId : record.classId
         })
@@ -170,15 +182,15 @@ class QueryClass extends React.Component {
     });
 
   }
-
   //点击修改班级
   changeClass(record){
+    console.log('record'+JSON.stringify(record))
     this.setState({curSelectClass : record})
     const {form}=this.props;
     //重新设置修改模态框中三个选项的值
-    form.setFieldsValue({'className': this.state.curSelectClass.className});
-    form.setFieldsValue({'subject': this.state.curSelectClass.subjectId});
-    form.setFieldsValue({'status': this.state.curSelectClass.statusId});
+    form.setFieldsValue({'className': record.className});
+    form.setFieldsValue({'subject':record.subjectName});
+    form.setFieldsValue({'status': record.statusName});
     this.setState({visibleChangeModal:true})
   }
 
@@ -194,14 +206,17 @@ class QueryClass extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         httpServer({
-          url : URL.change_class
+          url : URL.change_class,
+          method:'post'
         },{
-          className : "ClassServiceImpl",
-          type : 3,
-          subjectId : values.subject,
-          name : values.className,
+          class_Name : values.className,
           classId : this.state.curSelectClass.classId,
-          status : values.status,
+          subject_name:values.subject,
+          // subjectId:values.subjectid,
+          // statusName:values.statusName,
+          statusId:values.status,
+        }).then((res)=>{
+          this.getPageDate();//重新获取第一页
         })
       }
     });
@@ -211,6 +226,7 @@ class QueryClass extends React.Component {
   //搜索类型选择
   handleChange(value) {
     this.searchKey = value;
+    console.log('searchekey'+this.searchKey)
   }
 
   //点击所有班级
@@ -222,6 +238,7 @@ class QueryClass extends React.Component {
 
   //点击搜索
   searchClass(value) {
+    console.log("searchValue"+value)
     if(value == "") {
       Modal.error({
         content: "搜索内容不能为空！",
@@ -291,14 +308,14 @@ class QueryClass extends React.Component {
     };
 
     //科目信息
-    let subjectArr = [];
-    if(this.props.subjectinfo.subjectArr) {
-      subjectArr = this.props.subjectinfo.subjectArr.map((item)=>{
-        return (
-          <Option value={item.subjectid} key={item.subjectid}>{item.subjectname}</Option>
-        )
-      })
-    }
+    // let subjectArr = [];
+    // if(this.props.subjectinfo.subjectArr) {
+    //   subjectArr = this.props.subjectinfo.subjectArr.map((item)=>{
+    //     return (
+    //       <Option value={item.subjectid} key={item.subjectid}>{item.subjectname}</Option>
+    //     )
+    //   })
+    // }
 
     return(
       <div>
@@ -359,9 +376,10 @@ class QueryClass extends React.Component {
                 {getFieldDecorator('subject',{
                   initialValue : this.state.curSelectClass.subjectId
                 })(
-                  <Select style={{ width: '100%' }} onChange={this.handleChange.bind(this)}>
-                    {subjectArr}
-                  </Select>
+                  <Input />
+                  // <Select style={{ width: '100%' }} onChange={this.handleChange.bind(this)}>
+                  //   {subjectArr}
+                  // </Select>
                 )}
               </FormItem>
               <FormItem

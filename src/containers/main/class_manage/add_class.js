@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Form,Input,Select,Row,Col,Button } from 'antd';
+import { Form,Input,Select,Row,Col,Button,Modal,message } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
 
@@ -24,20 +24,33 @@ class AddClass extends React.Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        httpServer({
-          url : URL.add_class
-        },{
-          className : 'ClassServiceImpl',
-          type : 2,
-          subjectId : values.subject,
-          name : values.className
-        })
-      }
-    });
+    if(localStorage.user_type === '2'){
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          httpServer({
+            url : URL.add_class,
+            method:'post'
+          },{
+            className : 'ClassServiceImpl',
+            type : 2,
+            subjectId : values.subject,
+            name : values.className,
+            classId:values.classId
+          })
+        }
+      });
+    }
+   
   }
-
+  componentWillMount(){
+    if(localStorage.user_type === '1'){
+      return Modal.error({
+        title: '系统提示',
+        content: '你没有权限',
+        okText : '确定'
+      }); 
+    }
+  }
   render(){
     const { getFieldDecorator } = this.props.form;
     //表单布局
@@ -73,6 +86,15 @@ class AddClass extends React.Component {
             >
               {getFieldDecorator('className',{
                 rules: [{ required: true, message: '请输入班级名称！' }],
+              })(
+                <Input />
+              )}
+            </FormItem><FormItem
+              {...formItemLayout}
+              label="班级编号"
+            >
+              {getFieldDecorator('classId',{
+                rules: [{ required: true, message: '请输入班级编号！' }],
               })(
                 <Input />
               )}

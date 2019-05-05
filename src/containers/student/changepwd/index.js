@@ -23,6 +23,7 @@ class ChangePassword extends React.Component {
 
   submitChange(e){
     e.preventDefault();
+    let username =localStorage.getItem("userName");
     this.props.form.validateFields((err, values) => {
       if (!err) {
         if(values.password1 !== values.password2) {
@@ -33,10 +34,12 @@ class ChangePassword extends React.Component {
           return;
         }
         httpServer({
+          method:'post',
           url : URL.change_password
         },{
           className : 'UpdateUserPwdServiceImpl',
           type : 1,
+          username:username,
           password : values.password1,
           oldPassword : values.oldPassword
         })

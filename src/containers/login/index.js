@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Form, Icon, Input, Button, Checkbox ,Modal,message} from 'antd';
 const FormItem = Form.Item;
 import { Link } from 'react-router-dom'
 
@@ -23,6 +23,8 @@ class Login extends React.Component {
 	handleSubmit(e){
 	 e.preventDefault();
 	 this.props.form.validateFields((err, values) => {
+		 console.log('err'+err);
+		 console.log("values"+JSON.stringify(values));
 		 if (!err) {
 			 axiosLogin({
 				 className : 'LoginServiceImpl',
@@ -30,29 +32,45 @@ class Login extends React.Component {
 				 managerId : values.userName,
 				 password : values.password
 			 },(res) => {
-				 if(res.respCode === "1") {//登录成功
+				 console.log('res'+JSON.stringify(res.data))
+				 if(res.data.respCode === 1) {//登录成功
+					console.log("success")
 
 					 //发送Action  向Store 写入用户名和密码
 					 this.props.userinfoActions.login({
 	            userName: values.userName
 	        	})
-
+						let user_type=res.data.studentInfo[0].user_type;
+						let user_id =res.data.studentInfo[0].user_id;
 						//本地存储用户名
+						localStorage.setItem("user_id",user_id);
+						localStorage.setItem("user_type",user_type)
 						localStorage.setItem("userName",values.userName);
-						localStorage.setItem("roleSet",res.roleSet[0])
-						let status = 0;
-						if(status == 0){
+						localStorage.setItem('password',values.password);
+						console.log('values'+JSON.stringify(values))
+						// localStorage.setItem("roleSet",res.roleSet[0])
+						if(user_type === '0'){
+								//跳转到学生主页
+								this.props.history.push('/student/homepage');//react-router 4.0 写法
+						}else{
 							//跳转到教师主页
 							this.props.history.push('/main/homepage');//react-router 4.0 写法
-						}else{
-							//跳转到学生主页
-							this.props.history.push('/student/homepage');//react-router 4.0 写法
 						}
 				 }
-				 else if(res.respCode === "0") {//登录失败
+				 else if(res.data.respCode === -1) {//登录失败
+					Modal.error({
+						title: '用户名或者密码错误',
+						content: res.data.respMsg,
+						okText : '确定'
+					  });
 					 this.setState({loginTip : "登录名或密码错误"})
 				 }
-				 else if(res.respCode === "-1"){ //系统错误
+				 else if(res.data.respCode === 0){ //系统错误
+					Modal.error({
+						title: '出错了',
+						content: '服务器开小差了~请稍后再试',
+						okText : '确定'
+					  });
 					 this.setState({loginTip : "系统出错了，请稍等~"})
 				 }
 			 },(err) => {

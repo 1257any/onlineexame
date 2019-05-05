@@ -1,0 +1,12 @@
+.cardPart{
+    margin-top: 20px;
+    border: 1px solid #ccc;
+}
+.submit_btn{
+    float:right
+}
+.next_btn{
+    float:right;
+    margin-right: -25px;
+}
+

@@ -15,7 +15,7 @@ exports.paperInfo= async function(ctx, next){
             for(let i =0; i<question.questionObjects.length;i++){
                 for(let j in question.questionObjects[i].knowledgePointInfo){
                     // console.log(question.questionObjects[i].knowledgePointInfo[j])
-                    const results = await query( `insert into exam_content values(null,'${exam_id}','${question.questionObjects[i].questionType}','${j}','${question.questionObjects[i].knowledgePointInfo[j]}','${question.questionObjects[i].score}')`)
+                    const results = await query( `insert into exam_content values(null,'${exam_id}','${question.questionObjects[i].questionType}','${j}','${question.questionObjects[i].knowledgePointInfo[j]}','${question.questionObjects[i].score}',null,null)`)
                 }
                    
             }

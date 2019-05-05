@@ -40,6 +40,7 @@ class QueryTeacher extends React.Component {
   //得到一页数据
   getPageDate(){
     httpServer({
+      method:'post',
       url : URL.get_teacher
     },{
       className : 'ManagerServiceImpl',
@@ -49,15 +50,15 @@ class QueryTeacher extends React.Component {
     })
     .then((res)=>{
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-        let role = res.data.data[i].roleId == '2' ? '教学' : '教务';
+      for (let i = 0; i < res.data.results.length; i++) {
+        let role =  '教学' ;
         data.push({
           key: i,
-          name: res.data.data[i].name,
-          managerId : res.data.data[i].managerId,
+          name: res.data.results[i].username,
+          managerId :res.data.results[i].id,
           role : role,
-          roleId : res.data.data[i].roleId,
-          instId : res.data.data[i].instId,
+          // roleId :res.data.results[i].roleId,
+          // instId : res.data.results[i].instId,
         });
       }
 
@@ -73,6 +74,7 @@ class QueryTeacher extends React.Component {
   //得到搜索的数据
   getSearchData(){
     httpServer({
+      method:'post',
       url : URL.search_teacher
     },{
       className : 'ManagerServiceImpl',
@@ -84,15 +86,15 @@ class QueryTeacher extends React.Component {
     })
     .then((res)=>{
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-        let role = res.data.data[i].roleId == '2' ? '教学' : '教务';
+      for (let i = 0; i < res.data.results.length; i++) {
+        let role = res.data.results[i].user_type == '2' ? '是' : '否';
         data.push({
           key: i,
-          name: res.data.data[i].name,
-          managerId : res.data.data[i].managerId,
+          name: res.data.results[i].username,
+          managerId : res.data.results[i].id,
           role : role,
-          roleId : res.data.data[i].roleId,
-          instId : res.data.data[i].instId,
+          // roleId : res.data.results[i].roleId,
+          // instId : res.data.results[i].instId,
         });
       }
       this.state.pagination.total = res.data.total;
@@ -124,23 +126,32 @@ class QueryTeacher extends React.Component {
 
 
   componentWillMount(){
-    this.getPageDate();
+    if(localStorage.user_type === '1'){
+      return Modal.error({
+        title: '系统提示',
+        content: '你没有权限',
+        okText : '确定'
+      }); 
+    }else{
+      this.getPageDate();
+    }
   }
 
   //删除班级
   deleteClass(record){
     this.setState({curSelectClass : record})
+    console.log('record'+JSON.stringify(record))
     confirm({
       title: '你确定删除吗？',
       okText : '确定',
       cancelText : '取消',
       onOk:()=>{
         httpServer({
-          url : URL.delete_teacher
+          url : URL.delete_teacher,
+          method:'post'
         },{
-          className : 'ManagerServiceImpl',
           type : 4,
-          instId : this.state.curSelectClass.instId,
+          id : this.state.curSelectClass.managerId,
         })
         .then((res)=>{
           this.getPageDate();//重新获取第一页
@@ -154,9 +165,11 @@ class QueryTeacher extends React.Component {
   changeClass(record){
     //TODO : 第一次点击this.state.curSelectClass.class为空
     this.setState({curSelectClass : record})
+    // console.log('curSelectClass', curSelectClass)
     const {form}=this.props;
     //重新设置修改模态框中三个选项的值
     form.setFieldsValue({'name': record.name});
+    form.setFieldsValue({'managerId': record.managerId});
     this.setState({visibleChangeModal:true})
   }
 
@@ -170,16 +183,16 @@ class QueryTeacher extends React.Component {
     this.setState({visibleChangeModal:false})
 
     this.props.form.validateFieldsAndScroll((err, values) => {
+      // values{"name":"jack","managerId":"677","role":"教学"}
+      console.log('values'+JSON.stringify(values))
       if (!err) {
         httpServer({
-          url : URL.change_teacher
+          method:'post',
+          url : URL.change_teacher 
         },{
-          className : "ManagerServiceImpl",
-          type : 3,
           name : values.name,
-          instId : this.state.curSelectClass.instId,
-          password : "",
-          status : 1
+          id:values.managerId,//新id
+          old_id:this.state.curSelectClass.managerId//旧id
         })
         .then((res)=>{
           let className = "";
@@ -191,7 +204,7 @@ class QueryTeacher extends React.Component {
             return false;
           })
           this.state.data[this.state.curSelectClass.key].name =  values.name;
-          this.state.data[this.state.curSelectClass.key].class = className;
+          this.state.data[this.state.curSelectClass.key].managerId = managerId;
           this.setState({data:this.state.data});
         })
 
@@ -246,7 +259,7 @@ class QueryTeacher extends React.Component {
       dataIndex: 'managerId',
       key: 'managerId',
     }, {
-      title: '角色',
+      title: '管理员',
       dataIndex: 'role',
       key: 'role',
     }, {
@@ -295,7 +308,7 @@ class QueryTeacher extends React.Component {
 
     return(
       <div>
-        <BreadcrumbCustom pathList={['班级管理','查询班级']}></BreadcrumbCustom>
+        <BreadcrumbCustom pathList={['教师管理','查询教师']}></BreadcrumbCustom>
         <div className="class-manage-content">
           <Row>
             <Col span={24}>
@@ -344,13 +357,11 @@ class QueryTeacher extends React.Component {
                 {...formItemLayout}
                 label="工号"
               >
-                <span>{this.state.curSelectClass.managerId}</span>
-              </FormItem>
-              <FormItem
-                {...formItemLayout}
-                label="角色"
-              >
-                {this.state.curSelectClass.role}
+              {getFieldDecorator('managerId',{
+                initialValue : this.state.curSelectClass.managerId
+              })(
+                <Input />
+              )}
               </FormItem>
               <Row>
                 <Col span="24">

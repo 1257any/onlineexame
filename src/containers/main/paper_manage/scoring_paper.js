@@ -63,6 +63,7 @@ class ScoringPaper extends React.Component {
   //得到一页数据
   getPageDate(){
     httpServer({
+      method:'post',
       url : URL.get_papers
     },{
       className : 'QueryExamServiceImpl',
@@ -71,29 +72,31 @@ class ScoringPaper extends React.Component {
       type : 1,
     })
     .then((res)=>{
-      let respDate = res.data.data;
+      console.log('scoring'+JSON.stringify(res))
+      let respDate = res.data.results;
       const data = [];
       for (let i = 0; i < respDate.length; i++) {
 
         let teacherName = "";
-        let isSetTeacher = false;
-        if(respDate[i].managerList.length == 1) {//已设置老师
-          teacherName = respDate[i].managerList[0].name;
-          isSetTeacher = true;
-        }
-        else {//未设置老师
-          isSetTeacher = false;
-        }
+        let isSetTeacher = true;
+        // if(respDate[i].managerList.length == 1) {//已设置老师
+        //   teacherName = respDate[i].managerList[0].name;
+        //   isSetTeacher = true;
+        // }
+        // else {//未设置老师
+        //   isSetTeacher = false;
+        // }
         data.push({
           key: i,
-          className: respDate[i].className,
-          subjectName : respDate[i].subjectName,
-          examDate : respDate[i].examDate,
-          teacherName : teacherName,
-          managerList : respDate[i].managerList,
-          classId : respDate[i].classId,
-          paperId : respDate[i].paperId,
-          isSetTeacher : isSetTeacher,
+          className: respDate[i].class_name,
+          subjectName : '',
+          examDate : respDate[i].begin_time,
+          teacherName : '',
+          // managerList : respDate[i].managerList,
+          classId : respDate[i].class_id,
+          paperId : respDate[i].paper_exam_id,
+          status: respDate[i].status,
+          isSetTeacher :respDate[i].isSetTeacher,
         });
 
         data[i].isSetTeacher = isSetTeacher;
@@ -114,6 +117,7 @@ class ScoringPaper extends React.Component {
   //得到一页数据
   getSearchData(){
     httpServer({
+      method:'post',
       url : URL.search_papers
     },{
       className : 'QueryExamServiceImpl',
@@ -124,7 +128,7 @@ class ScoringPaper extends React.Component {
       content : this.searchContent,
     })
     .then((res)=>{
-      let respDate = res.data.data;
+      let respDate = res.data;
       const data = [];
       for (let i = 0; i < respDate.length; i++) {
 
@@ -167,7 +171,6 @@ class ScoringPaper extends React.Component {
   componentWillMount(){
     this.getPageDate();
   }
-
   //翻页
   handleTableChange(pagination, filters, sorter){
     const pager = this.state.pagination;
@@ -200,16 +203,18 @@ class ScoringPaper extends React.Component {
 
   //点击开始阅卷按钮
   beginScoring(i){
+    console.log("data[i]",this.state.data[i])
     this.state.curPaperInfo = this.state.data[i];
     this.setState({curPaperInfo : this.state.curPaperInfo});
     httpServer({
+      method:'post',
       url : URL.auto_read
     },{
       className : 'StuExamBatchImpl',
       classId : this.state.curPaperInfo.classId,
       paperId : this.state.curPaperInfo.paperId,
     })
-    this.props.history.push("/main/paper_manage/scoring/all_papers/"+this.state.curPaperInfo.paperId+"/"+this.state.curPaperInfo.classId+"/"+this.state.data[i].managerList[0].managerId);//react-router 4.0 写法
+    this.props.history.push("/main/paper_manage/scoring/all_papers/"+this.state.curPaperInfo.paperId+"/"+this.state.curPaperInfo.classId);//react-router 4.0 写法
   }
 
   //确认修改
@@ -217,6 +222,7 @@ class ScoringPaper extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         httpServer({
+          method:'post',
           url : URL.set_teacher
         },{
           className : "SetExamManagerIdImpl",
@@ -269,9 +275,8 @@ class ScoringPaper extends React.Component {
       render: (text, record) => (
         <span>
           {
-            record.isSetTeacher ?
-            <Button type="primary" size="small" onClick={this.beginScoring.bind(this,record.key)}>开始阅卷</Button> :
-            <Button type="primary" disabled size="small">开始阅卷</Button>
+            this.state.data[record.key].status ?
+            <Button type="primary" size="small" onClick={this.beginScoring.bind(this,record.key)}>开始阅卷</Button>:  <Button type="primary" disabled size="small">开始阅卷</Button>
           }
         </span>
       ),
@@ -281,6 +286,7 @@ class ScoringPaper extends React.Component {
       render: (text, record) => (
         <span>
           {this.state.data[record.key].isSetTeacher? <span>{this.state.data[record.key].teacherName}</span> : <Button type="primary" size="small" onClick={this.setTeacherBtn.bind(this,record.key)}>设置老师</Button>}
+            {/* {localStorage.user_type == 2?<Button type="primary" size="small" onClick={this.setTeacherBtn.bind(this,record.key)}>设置老师</Button> :'' } */}
         </span>
       ),
     }];

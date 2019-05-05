@@ -209,3 +209,12 @@ npm start
 ```js
 npm run build
 ```
+
+
+###用户信息表
+  0 代表学生
+  1 代表教师
+  2 代表有管理员权限的教师
+
+
+  questionres[{"id":37,"exam_type":null,"exam_level":"1","question_type":"0","knowlege_type":"1","question":"以下为js的基本数据类型的是？","answer":"B","choice":[{"id":21,"content":"String","item":"A","question_id":37},{"id":22,"content":"date","item":"B","question_id":37},{"id":23,"content":"int","item":"C","question_id":37},{"id":24,"content":"float","item":"D","question_id":37}]},{"id":37,"exam_type":null,"exam_level":"1","question_type":"0","knowlege_type":"1","question":"以下为js的基本数据类型的是？","answer":"B","choice":[{"id":21,"content":"String","item":"A","question_id":37},{"id":22,"content":"date","item":"B","question_id":37},{"id":23,"content":"int","item":"C","question_id":37},{"id":24,"content":"float","item":"D","question_id":37}]},{"id":40,"exam_type":null,"exam_level":"1","question_type":"2","knowlege_type":"3","question":"css时编写页面样式的语言？","answer":"1"},{"id":40,"exam_type":null,"exam_level":"1","question_type":"2","knowlege_type":"3","question":"css时编写页面样式的语言？","answer":"1"},{"id":38,"exam_type":null,"exam_level":"1","question_type":"0","knowlege_type":"2","question":"以下html的叙述错误的为？","answer":"B","choice":[{"id":25,"content":"li为块级标签","item":"A","question_id":38},{"id":26,"content":"html中的canvas没有任何用途","item":"B","question_id":38},{"id":27,"content":"html","item":"C","question_id":38},{"id":28,"content":"float","item":"D","question_id":38}]},{"id":37,"exam_type":null,"exam_level":"1","question_type":"0","knowlege_type":"1","question":"以下为js的基本数据类型的是？","answer":"B"}]

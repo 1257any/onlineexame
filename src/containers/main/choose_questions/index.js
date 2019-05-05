@@ -63,6 +63,7 @@ class ChooseQuestions extends React.Component {
   //发送出卷请求
   sendChooseQuestion(sendObj){
     httpServer({
+      method:'post',
       url : URL.paper_info
     },sendObj)
   }
@@ -137,6 +138,7 @@ class ChooseQuestions extends React.Component {
   getKnowledgePoint(){
     //获取知识点
     httpServer({
+      method:'get',
       url : URL.knowledge_point
     },{
       className : 'KnowledgePointInfoServiceImpl',

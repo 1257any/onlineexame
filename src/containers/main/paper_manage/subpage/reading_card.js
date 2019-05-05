@@ -7,6 +7,7 @@ export default class ReadingCard extends React.Component {
     super()
     this.state = {
       type : 0, //1 填空题  5 简答题 6 编程题
+      index:0
     }
   }
 
@@ -15,7 +16,7 @@ export default class ReadingCard extends React.Component {
 
   componentWillReceiveProps(nextProps){
     if(nextProps.questionList[0]) {
-        this.setState({type : nextProps.questionList[0].type})
+        this.setState({type : nextProps.questionList[0].question_type})
     }
 
   }
@@ -29,12 +30,12 @@ export default class ReadingCard extends React.Component {
 
     let questionList = [];
     this.props.questionList.forEach((item,i)=>{
+      console.log("quetionlist"+this.props.questionList)
       questionList.push(
         <div className="question-single" key={i}>
           <Tag>第{i+1}题</Tag>
-          <span>（（后台未给）分）</span>
           <div className="content">
-            {item.questionstem}
+            {item.question}
           </div>
           <div className="content">
             <div className="bold">学生答案：</div>
@@ -46,6 +47,7 @@ export default class ReadingCard extends React.Component {
           {i == this.props.questionList.length-1 ? "" : <Divider dashed="true"/>}
         </div>
       )
+      // this.setState({index:this.state.index+1})
     })
 
 

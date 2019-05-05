@@ -28,14 +28,15 @@ class QProgram extends React.Component {
 
         //提交题目信息
         httpServer({
+          method:'post',
           url : URL.q_checkin
         },{
-          className : 'QuestionInfoServiceImpl',
           gradeId : this.props.level,
           pointId : values.knowledgePoint,
           questionstem : values.tigan,
+          answer:null,
           imageSrc : '',
-          type : 6,
+          type : 5,
         })
 
       }

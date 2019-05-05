@@ -3,6 +3,7 @@ import React from 'react'
 import { Form,Input,Select,Row,Col,Button } from 'antd';
 const FormItem = Form.Item;
 const Option = Select.Option;
+import {Modal,message} from 'antd'
 
 import BreadcrumbCustom from '@components/BreadcrumbCustom'
 import httpServer from '@components/httpServer.js'
@@ -12,8 +13,6 @@ class AddTeacher extends React.Component {
   constructor(){
     super()
     this.state = {
-      pathList : ['教师管理','添加教师'],//面包屑路径
-      managerId : 0,
     }
   }
 
@@ -22,39 +21,49 @@ class AddTeacher extends React.Component {
     console.log(`selected ${value}`);
   }
 
-  //获取工号
-  getManagerId(){
-    httpServer({
-      url : URL.get_manager_id
-    },{
-      className : 'ManagerServiceImpl',
-      type : 5,
-    })
-    .then((res)=>{
-      this.setState({managerId:res.data.data});
-    })
-  }
+  // //获取工号
+  // getManagerId(){
+  //   httpServer({
+  //     method:'post',
+  //     url : URL.get_manager_id
+  //   },{
+  //     className : 'ManagerServiceImpl',
+  //     type : 5,
+  //   })
+  //   .then((res)=>{
+  //     this.setState({managerId:res.data.results[0].id});
+  //   })
+  // }
 
   //提交
   handleSubmit(e) {
     e.preventDefault();
-    this.props.form.validateFields((err, values) => {
-      if (!err) {
-        httpServer({
-          url : URL.add_teacher
-        },{
-          className : 'ManagerServiceImpl',
-          type : 1,
-          roleId : values.roleId,
-          name : values.name,
-          managerId : this.state.managerId,
-        })
-      }
-    });
+    if(localStorage.user_type === '2'){
+      this.props.form.validateFields((err, values) => {
+        if (!err) {
+          httpServer({
+            method:'post',
+            url : URL.add_teacher
+          },{
+            id:values.id,
+            name : values.name,
+            username : values.username,
+            password : values.password,
+          })
+        }
+      });
+    }
+   
   }
 
   componentWillMount(){
-    this.getManagerId();
+    if(localStorage.user_type === '1'){
+      return Modal.error({
+        title: '系统提示',
+        content: '你没有权限',
+        okText : '确定'
+      }); 
+    }
   }
 
   render(){
@@ -74,14 +83,16 @@ class AddTeacher extends React.Component {
 
     return(
       <div>
-        <BreadcrumbCustom pathList={this.state.pathList}></BreadcrumbCustom>
+        {/* <BreadcrumbCustom pathList={this.state.pathList}></BreadcrumbCustom> */}
         <div className="add-student-content">
           <Form onSubmit={this.handleSubmit.bind(this)}>
             <FormItem
               {...formItemLayout}
               label="工号"
             >
-              <span>{this.state.managerId}</span>
+              {getFieldDecorator('id')(
+                <Input />
+              )}
             </FormItem>
             <FormItem
               {...formItemLayout}
@@ -93,13 +104,18 @@ class AddTeacher extends React.Component {
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="角色"
+              label="用户名"
             >
-              {getFieldDecorator('roleId')(
-                <Select style={{ width: '100%' }}>
-                  <Option value={2}>教学</Option>
-                  <Option value={3}>教务</Option>
-                </Select>
+              {getFieldDecorator('username')(
+                <Input />
+              )}
+            </FormItem>
+            <FormItem
+              {...formItemLayout}
+              label="密码"
+            >
+              {getFieldDecorator('password')(
+                <Input />
               )}
             </FormItem>
             <Row>

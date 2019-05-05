@@ -41,10 +41,11 @@ class QueryStudent extends React.Component {
   //得到搜索的数据
   getSearchData(){
     httpServer({
-      url : URL.search_score,
+      url : URL.get_grade,
       method:'post'
     },{
       className : 'StudentExamInfoServiceImpl',
+      user_id:localStorage.user_id,
       content : this.searchContent,
       searchType : this.searchKey,
       page : this.state.pagination.current,
@@ -124,17 +125,13 @@ class QueryStudent extends React.Component {
       dataIndex: 'name',
       key: 'name',
     }, {
-      title: '班级',
-      dataIndex: 'class',
-      key: 'class',
+      title: '科目',
+      dataIndex: 'subject',
+      key: 'subject',
     }, {
-      title: '学号',
-      dataIndex: 'studentId',
-      key: 'studentId',
-    }, {
-      title: '考试名称',
-      dataIndex: 'examName',
-      key: 'examName',
+      title: '学年',
+      dataIndex: 'year',
+      key: 'year',
     },{
       title: '成绩',
       dataIndex: 'score',
@@ -175,7 +172,7 @@ class QueryStudent extends React.Component {
 
     return(
       <div>
-        <BreadcrumbCustom pathList={['班级管理','查询班级']}></BreadcrumbCustom>
+        <BreadcrumbCustom pathList={['个人中心','查询成绩']}></BreadcrumbCustom>
         <div className="class-manage-content">
           <Row>
             <Col span={24}>

@@ -24,8 +24,9 @@ class AllPapers extends React.Component {
   }
 
   //得到所有试卷
-  getAllPapers(paperId,classId,managerId){
+  getAllPapers(paperId,classId){
     httpServer({
+      method:'post',
       url : URL.get_all_papers
     },{
       className : 'QueryExamServiceImpl',
@@ -34,23 +35,23 @@ class AllPapers extends React.Component {
       type : 2,
       paperId : paperId,
       classId : classId,
-      managerId : managerId,
     })
     .then((res)=>{
+      console.log('allpapers'+JSON.stringify(res))
       const data = [];
       for (let i = 0; i < res.data.data.length; i++) {
-        let status = res.data.data[i].status == '3' ? '已阅卷' : '未阅卷';
+        let status =  res.data.data[i].status == '3' ? '已阅卷' : '未阅卷';
         data.push({
           key: i,
-          name: res.data.data[i].name,
-          stuId : res.data.data[i].stuId,
-          statusId : res.data.data[i].status,
-          statusName : status,
-          instId : res.data.data[i].instId,
+          name:  res.data.data[i].name,
+          stuId : res.data.data[i].id,
+          // statusId :  res.data.data[i].status,
+          // statusName : status,
+          // instId : res.data.data[i].instId,
         });
       }
 
-      this.state.pagination.total = res.data.total;
+      this.state.pagination.total =  res.data.data.total;
 
       this.setState({
         data:data,
@@ -70,9 +71,11 @@ class AllPapers extends React.Component {
   }
 
   componentWillMount(){
-    this.getAllPapers(this.props.match.params.paperId,this.props.match.params.classId,this.props.match.params.managerId);
+    console.log('paperId'+this.props.match.params.paperId+'classId'+this.props.match.params.classId)
+    this.getAllPapers(this.props.match.params.paperId,this.props.match.params.classId);
   }
   componentDidmount(){
+    console.log('props'+this.props)
   }
 
   componentWillReceiveProps(nextProps){
@@ -127,12 +130,13 @@ class AllPapers extends React.Component {
           {this.state.data[record.key].statusId == '3' ?
           <Button size="small" onClick={this.beginReading.bind(this)}>
             <Link
-              to={`/main/paper_manage/scoring/all_papers/reading_paper/${this.props.match.params.paperId}/${this.props.match.params.classId}/${this.state.data[record.key].instId}`}
+              to={`/main/paper_manage/scoring/all_papers/reading_paper/${this.props.match.params.paperId}/${this.props.match.params.classId}/${this.state.data[record.key].stuId}`}
             >重新阅卷</Link>
           </Button> :
           <Button type="primary" size="small" onClick={this.beginReading.bind(this)}>
             <Link
-              to={`/main/paper_manage/scoring/all_papers/reading_paper/${this.props.match.params.paperId}/${this.props.match.params.classId}/${this.state.data[record.key].instId}`}
+              to={`/main/paper_manage/scoring/all_papers/reading_paper/${this.props.match.params.paperId}/${this.props.match.params.classId}/${this.state.data[record.key].stuId}`}
+              // to={`/main/paper_manage/scoring/all_papers/reading_paper`}
             >开始阅卷</Link>
           </Button>
           }

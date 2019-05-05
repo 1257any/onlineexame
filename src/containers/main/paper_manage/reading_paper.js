@@ -26,12 +26,13 @@ class ReadingPaper extends React.Component {
     this.totalScore = 0;
   }
 
-  getStuAnswer(instId){
+  getStuAnswer(stuId){
     httpServer({
+      method:'post',
       url : URL.get_stu_answer
     },{
       className : 'GetQuestionStuAnswerImpl',
-      instId : instId,
+      stuId : stuId,
     })
     .then((res)=>{
       let respDate = res.data.data;
@@ -39,13 +40,13 @@ class ReadingPaper extends React.Component {
       let shortAnswerList=[];
       let programList=[];
       for(let i=0;i<respDate.length;i++) {
-        if(respDate[i].type == '1') { //填空题
+        if(respDate[i].question_type == '2') { //填空题
           fillInList.push(respDate[i]);
         }
-        else if(respDate[i].type == '5') { //简答题
+        else if(respDate[i].question_type == '3') { //简答题
           shortAnswerList.push(respDate[i]);
         }
-        else if(respDate[i].type == '6') {//编程题
+        else if(respDate[i].question_type == '4') {//编程题
           programList.push(respDate[i]);
         }
       }
@@ -62,13 +63,14 @@ class ReadingPaper extends React.Component {
 
   //老师打分框框改变
   scoreChange(type,i,value){
-    if(type == '1') { //填空题
+    console.log('type'+type)
+    if(type == '2') { //填空题
       this.gapscorelist[i] = value;
     }
-    else if(type == '5') { //简答题
+    else if(type == '3') { //简答题
       this.shoscorelist[i] = value;
     }
-    else if(type == '6') {//编程题
+    else if(type == '4') {//编程题
       this.proscorelist[i] = value;
     }
   }
@@ -79,6 +81,7 @@ class ReadingPaper extends React.Component {
     //总分
     let totalScore = 0;
     let flag = false;
+    console.log('gapscoreList'+this.gapscorelist)
     for(let i = 0;i<this.gapscorelist.length;i++) {
       if(typeof this.gapscorelist[i] == "undefined") {
         flag = true;
@@ -103,19 +106,21 @@ class ReadingPaper extends React.Component {
       totalScore += parseInt(this.proscorelist[i]);
     }
 
-    if(flag) {
-      Modal.warning({
-        title: '您有题目还没有评分，请评分后再提交',
-        okText : '确定'
-      });
-      return;
-    }
+    // if(flag) {
+    //   Modal.warning({
+    //     title: '您有题目还没有评分，请评分后再提交',
+    //     okText : '确定'
+    //   });
+    //   return;
+    // }
 
     httpServer({
+      method:'post',
       url : URL.submit_score
     },{
-      className : 'StudentExamUpdateImpl',
-      instId :this.props.match.params.instId,
+      username:localStorage.userName,
+      classId : this.props.match.params.classId,
+      stuId :this.props.match.params.stuId,
       gapscorelist : this.gapscorelist,
       shoscorelist : this.shoscorelist,
       proscorelist : this.proscorelist,
@@ -123,13 +128,15 @@ class ReadingPaper extends React.Component {
       updateType : 2,
     })
     .then((res)=>{
-      this.props.history.push(`/main/paper_manage/scoring/all_papers/${this.props.match.params.paperId}/${this.props.match.params.classId}`);
+      this.props.history.push(`/main/paper_manage/scoring/all_papers/${this.props.match.params.paperId}/${this.props.match.params.classId}/${this.props.match.params.instId}`);
     })
 
   }
 
   componentWillMount(){
-    this.getStuAnswer(this.props.match.params.instId);
+    // this.props.match.params.paperId}/${this.props.match.params.classId}
+    console.log('instId'+this.props.match.params.stuId)
+    this.getStuAnswer(this.props.match.params.stuId);
   }
 
   render(){

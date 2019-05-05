@@ -27,14 +27,15 @@ class QFillIn extends React.Component {
       if (!err) {
         //提交题目信息
         httpServer({
+          method:'post',
           url : URL.q_checkin
         },{
-          className : 'QuestionInfoServiceImpl',
-          gradeId : this.props.level,
+          // className : 'QuestionInfoServiceImpl',
+          gradeId : this.props.level,//
           pointId : values.knowledgePoint,
-          questionstem : values.tigan,
-          imageSrc : '',
-          type : 1,
+          questionstem  : values.tigan,//题目内容
+          type : 3,//题型
+         answer:null
         })
 
       }

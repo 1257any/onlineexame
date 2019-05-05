@@ -40,6 +40,7 @@ class QueryStudent extends React.Component {
   //得到一页数据
   getPageDate(){
     httpServer({
+      method:'post',
       url : URL.get_student
     },{
       className : 'StudentServiceImpl',
@@ -49,23 +50,23 @@ class QueryStudent extends React.Component {
     })
     .then((res)=>{
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-
+      console.log('stud'+JSON.stringify(res))
+      for (let i = 0; i < res.data.results.length; i++) {
         let className = "";
-        this.props.classinfo.classArr.some((item)=>{
-          if(item.classId == res.data.data[i].classId) {
-            className = item.className;
-            return true;
-          }
-          return false;
-        })
+        // this.props.classinfo.classArr.some((item)=>{
+        //   if(item.classId == res.data.results[i].classId) {
+        //     className = item.className;
+        //     return true;
+        //   }
+        //   return false;
+        // })
 
         data.push({
           key: i,
-          name: res.data.data[i].name,
-          class : className,
-          classId : res.data.data[i].classId,
-          studentId : res.data.data[i].stuId
+          name: res.data.results[i].name,
+          class : res.data.results[i].class_name,
+          classId : res.data.results[i].class_id,
+          studentId : res.data.results[i].id
         });
       }
 
@@ -81,6 +82,7 @@ class QueryStudent extends React.Component {
   //得到搜索的数据
   getSearchData(){
     httpServer({
+      method:'post',
       url : URL.search_student
     },{
       className : 'StudentServiceImpl',
@@ -92,22 +94,23 @@ class QueryStudent extends React.Component {
     })
     .then((res)=>{
       const data = [];
-      for (let i = 0; i < res.data.data.length; i++) {
-        let className = "";
-        this.props.classinfo.classArr.some((item)=>{
-          if(item.classId == res.data.data[i].classId) {
-            className = item.className;
-            return true;
-          }
-          return false;
-        })
+      for (let i = 0; i < res.data.results.length; i++) {
 
+        let className = "";
+        console.log("classinfo"+this.props.classinfo)
+        // this.props.classinfo.classArr.some((item)=>{
+        //   if(item.classId == res.data.results[i].classId) {
+        //     className = item.className;
+        //     return true;
+        //   }
+        //   return false;
+        // })
         data.push({
           key: i,
-          name: res.data.data[i].name,
-          class : className,
-          classId : res.data.data[i].classId,
-          studentId : res.data.data[i].stuId
+          name: res.data.results[i].name,
+          class : res.data.results[i].class_name,
+          classId : res.data.results[i].class_id,
+          studentId : res.data.results[i].id
         });
       }
       this.state.pagination.total = res.data.total;
@@ -139,10 +142,19 @@ class QueryStudent extends React.Component {
 
 
   componentWillMount(){
-    this.getPageDate();
+    if(localStorage.user_type === '1'){
+      return Modal.error({
+        title: '系统提示',
+        content: '你没有权限',
+        okText : '确定'
+      }); 
+    }else{
+      this.getPageDate();
+    }
+  
   }
 
-  //删除班级
+  //删除学生
   deleteClass(record){
     this.setState({curSelectClass : record})
     confirm({
@@ -151,9 +163,9 @@ class QueryStudent extends React.Component {
       cancelText : '取消',
       onOk:()=>{
         httpServer({
+          method:'post',
           url : URL.delete_student
         },{
-          className : 'StudentServiceImpl',
           type : 4,
           stuId : this.state.curSelectClass.studentId,
         })
@@ -165,7 +177,7 @@ class QueryStudent extends React.Component {
 
   }
 
-  //点击修改班级
+  //点击修改学生
   changeClass(record){
     //TODO : 第一次点击this.state.curSelectClass.class为空
     this.setState({curSelectClass : record})
@@ -188,6 +200,7 @@ class QueryStudent extends React.Component {
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         httpServer({
+          method:'post',
           url : URL.change_student
         },{
           className : "StudentServiceImpl",
@@ -199,15 +212,15 @@ class QueryStudent extends React.Component {
         })
         .then((res)=>{
           let className = "";
-          this.props.classinfo.classArr.some((item)=>{
-            if(item.classId == values.class) {
-              className = item.className;
-              return true;
-            }
-            return false;
-          })
+          // this.props.classinfo.classArr.some((item)=>{
+          //   if(item.classId == values.class) {
+          //     className = item.className;
+          //     return true;
+          //   }
+          //   return false;
+          // })
           this.state.data[this.state.curSelectClass.key].name =  values.name;
-          this.state.data[this.state.curSelectClass.key].class = className;
+          this.state.data[this.state.curSelectClass.key].class = values.class;
           this.setState({data:this.state.data});
         })
 
@@ -249,7 +262,9 @@ class QueryStudent extends React.Component {
     console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   }
-
+  // componentWillMount(){
+  //   this.getPageDate();
+  // }
   render(){
     const { getFieldDecorator } = this.props.form;
 
@@ -299,14 +314,14 @@ class QueryStudent extends React.Component {
     };
 
     //班级信息
-    let classArr = [];
-    if(this.props.classinfo.classArr) {
-      classArr = this.props.classinfo.classArr.map((item)=>{
-        return (
-          <Option value={item.classId} key={item.classId}>{item.className}</Option>
-        )
-      })
-    }
+    // let classArr = [];
+    // if(this.props.classinfo.classArr) {
+    //   classArr = this.props.classinfo.classArr.map((item)=>{
+    //     return (
+    //       <Option value={item.classId} key={item.classId}>{item.className}</Option>
+    //     )
+    //   })
+    // }
 
 
     return(
@@ -370,9 +385,10 @@ class QueryStudent extends React.Component {
                 {getFieldDecorator('class',{
                   initialValue : this.state.curSelectClass.class
                 })(
-                  <Select style={{ width: '100%' }} onChange={this.handleChange.bind(this)}>
-                    {classArr}
-                  </Select>
+                  <Input />
+                  // <Select style={{ width: '100%' }} onChange={this.handleChange.bind(this)}>
+                  //   {classArr}
+                  // </Select>
                 )}
               </FormItem>
               <FormItem
