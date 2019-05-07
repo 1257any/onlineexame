@@ -129,22 +129,41 @@ export default class creact_paper extends React.Component {
         }
       })
     })
-
+    //判断是否已经存在，是否需要覆盖
     let index = this.state.index;
+    let exist = false;
+    let aindex;
     answer_OR.qusetion_id = this.state.allQuestion[index].id;
     answer_OR.content = this.state.allQuestion[index].question;
     answer_OR.question_type = this.state.allQuestion[index].question_type;
     answer_OR.paper_id = this.state.paper_id;
     answer_OR.stu_id = this.state.stu_id;
-    this.setState(
-      {
-        answer: [...this.state.answer, answer_OR]
-      }, () => {
-        console.log("MR_values" + JSON.stringify(this.state.answer));
-        // console.log('加载完成')
+    
+    this.state.answer.map((item,aindex)=>{
+      if(item.qusetion_id == this.state.allQuestion[index].id){
+       exist = true;
+       console.log('aindex'+aindex);
+       this.aindex = aindex
       }
-    )
-
+    })
+   
+    if(!exist){
+      this.setState(
+        {
+          answer: [...this.state.answer, answer_OR]
+        }, () => {
+          console.log("MR_values" + JSON.stringify(this.state.answer));
+          // console.log('加载完成')
+        }
+      ) 
+    }else{
+      let answer =this.state.answer ;
+      console.log("aindex"+this.aindex+'aindex'+answer[this.aindex]);
+      answer[this.aindex] = answer_OR;
+      this.setState({answer:answer})
+      console.log("MR_values" + JSON.stringify(this.state.answer));
+    }
+    
     // this.setState({ Checkbox_values: e })
   }
   //判断题
