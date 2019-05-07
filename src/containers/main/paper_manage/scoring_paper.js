@@ -206,14 +206,6 @@ class ScoringPaper extends React.Component {
     console.log("data[i]",this.state.data[i])
     this.state.curPaperInfo = this.state.data[i];
     this.setState({curPaperInfo : this.state.curPaperInfo});
-    httpServer({
-      method:'post',
-      url : URL.auto_read
-    },{
-      className : 'StuExamBatchImpl',
-      classId : this.state.curPaperInfo.classId,
-      paperId : this.state.curPaperInfo.paperId,
-    })
     this.props.history.push("/main/paper_manage/scoring/all_papers/"+this.state.curPaperInfo.paperId+"/"+this.state.curPaperInfo.classId);//react-router 4.0 写法
   }
 

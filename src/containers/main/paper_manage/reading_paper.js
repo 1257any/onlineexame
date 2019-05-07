@@ -19,6 +19,7 @@ class ReadingPaper extends React.Component {
       fillInList : [],
       shortAnswerList : [],
       programList : [],
+      auto_score:''
     }
     this.gapscorelist = [];
     this.shoscorelist = [];
@@ -113,7 +114,7 @@ class ReadingPaper extends React.Component {
     //   });
     //   return;
     // }
-
+    console.log('auto_score'+typeof this.state.auto_score)
     httpServer({
       method:'post',
       url : URL.submit_score
@@ -124,7 +125,7 @@ class ReadingPaper extends React.Component {
       gapscorelist : this.gapscorelist,
       shoscorelist : this.shoscorelist,
       proscorelist : this.proscorelist,
-      totalScore : totalScore,
+      totalScore : totalScore+parseInt(this.state.auto_score),
       updateType : 2,
     })
     .then((res)=>{
@@ -137,6 +138,17 @@ class ReadingPaper extends React.Component {
     // this.props.match.params.paperId}/${this.props.match.params.classId}
     console.log('instId'+this.props.match.params.stuId)
     this.getStuAnswer(this.props.match.params.stuId);
+    httpServer({
+      method:'post',
+      url : URL.auto_read
+    },{
+      stuId:this.props.match.params.stuId
+    }) .then((res)=>{
+        console.log('reshrerh'+JSON.stringify(res))
+        let auto_score = parseInt(res.data.auto_score)
+        console.log('auto_score'+auto_score)
+        this.setState({auto_score,auto_score})
+    })
   }
 
   render(){

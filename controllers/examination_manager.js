@@ -18,7 +18,7 @@ exports.paperInfo = async function (ctx, next) {
       // `insert  into class values('${data.name}','${data.classId}','${data.subjectId}','',null)`
       `select  * from  create_exam`
     );
-        console.log("result"+JSON.stringify(results));
+    console.log("result" + JSON.stringify(results));
 
     // ctx.body = {
     //           "respCode" : "1",
@@ -277,127 +277,127 @@ exports.set_teacher = async function (ctx, next) {
 //修改教师
 exports.get_stu_answer = async function (ctx, next) {
   try {
-    	const result = ctx.request.body;
-    	const connection = connectionModel.getConnection();
-    	const query = bluebird.promisify(connection.query.bind(connection));
+    const result = ctx.request.body;
+    const connection = connectionModel.getConnection();
+    const query = bluebird.promisify(connection.query.bind(connection));
     // 	// console.log('a'+JSON.stringify(data.params.managerId));
-    	console.log('stuId'+result.stuId)
-    	const data = await query(
-            `select * from  student_answer where student_no ='${result.stuId}'`
-        );
-        console.log("data",JSON.stringify(data));
-    	if(data.length){
-    ctx.body = {
-      "respCode": "1",
-       data
-      // "data": [{
-      //   "answer": "a",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 1,
-      //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空题干？",
-      //   "type": 1
-      // }, {
-      //   "answer": "b",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 2,
-      //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空的飞洒发斯蒂芬啊大丰收sad",
-      //   "type": 1
-      // }, {
-      //   "answer": "c",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 3,
-      //   "questionstem": "简答简答简答简答简答简答简答简答简答简答简答简答简答简答的飞洒发斯蒂芬啊大丰收sad",
-      //   "type": 5
-      // }, {
-      //   "answer": "d",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 4,
-      //   "questionstem": "dfja简答简答简答简答简答简答简答简答简答slkfjalksdjflkasjti题干？",
-      //   "type": 5
-      // }, {
-      //   "answer": "e",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 5,
-      //   "questionstem": "的飞洒发斯简答简答简答简答简答简答简答简答简答简答简答简答蒂芬啊大丰收sad",
-      //   "type": 5
-      // }, {
-      //   "answer": "f",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 6,
-      //   "questionstem": "程序题的飞程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题洒发斯蒂芬啊大丰收sad",
-      //   "type": 6
-      // }, {
-      //   "answer": "g",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 7,
-      //   "questionstem": "dfjaslkfjalksdjf程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题lkasjti题干？",
-      //   "type": 6
-      // }, {
-      //   "answer": "h",
-      //   "gradeId": 0,
-      //   "pointId": 0,
-      //   "questionId": 8,
-      //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空的飞洒发斯蒂芬啊大丰收sad",
-      //   "type": 1
-      // }]
+    console.log('stuId' + result.stuId)
+    const data = await query(
+      `select * from  student_answer where student_no ='${result.stuId}'`
+    );
+    console.log("data", JSON.stringify(data));
+    if (data.length) {
+      ctx.body = {
+        "respCode": "1",
+        data
+        // "data": [{
+        //   "answer": "a",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 1,
+        //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空题干？",
+        //   "type": 1
+        // }, {
+        //   "answer": "b",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 2,
+        //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空的飞洒发斯蒂芬啊大丰收sad",
+        //   "type": 1
+        // }, {
+        //   "answer": "c",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 3,
+        //   "questionstem": "简答简答简答简答简答简答简答简答简答简答简答简答简答简答的飞洒发斯蒂芬啊大丰收sad",
+        //   "type": 5
+        // }, {
+        //   "answer": "d",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 4,
+        //   "questionstem": "dfja简答简答简答简答简答简答简答简答简答slkfjalksdjflkasjti题干？",
+        //   "type": 5
+        // }, {
+        //   "answer": "e",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 5,
+        //   "questionstem": "的飞洒发斯简答简答简答简答简答简答简答简答简答简答简答简答蒂芬啊大丰收sad",
+        //   "type": 5
+        // }, {
+        //   "answer": "f",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 6,
+        //   "questionstem": "程序题的飞程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题洒发斯蒂芬啊大丰收sad",
+        //   "type": 6
+        // }, {
+        //   "answer": "g",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 7,
+        //   "questionstem": "dfjaslkfjalksdjf程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题程序题lkasjti题干？",
+        //   "type": 6
+        // }, {
+        //   "answer": "h",
+        //   "gradeId": 0,
+        //   "pointId": 0,
+        //   "questionId": 8,
+        //   "questionstem": "填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空填空的飞洒发斯蒂芬啊大丰收sad",
+        //   "type": 1
+        // }]
 
 
-    };
-    	}else {
-      		ctx.body = {
-    			respCode:"-1",
-    			respMsg : '暂无作答'
-    		};
+      };
+    } else {
+      ctx.body = {
+        respCode: "-1",
+        respMsg: '暂无作答'
+      };
     }
-    	connection.end();
+    connection.end();
   } catch (e) {
     console.log('[/user/login] error:', e.message, e.stack);
-		ctx.body = {
-			respCode: e.code || -1,
-			respMsg: e.message
-		};
+    ctx.body = {
+      respCode: e.code || -1,
+      respMsg: e.message
+    };
   }
 };
 //修改教师
 exports.submit_score = async function (ctx, next) {
   try {
-    	const data = ctx.request.body;
-    	const connection = connectionModel.getConnection();
-    	const query = bluebird.promisify(connection.query.bind(connection));
-    	// console.log('a'+JSON.stringify(data.params.managerId));
-      // console.log('content'+data.content)
-      //非选择题的总分
-      // const username = localStorage.userName;
-    	const results = await query(
-            `insert into student_grade value(null,'${data.totalScore}',null,'${data.stuId}',null,'${data.username}','${data.classId}')`
-        );
-        console.log("result",JSON.stringify(results));
-    	if(!results.length){
-    		ctx.body = {
-                respCode: 1,
-    			results,
-    			respMsg:'更新成功'
-    		};
-    	}else {
-    ctx.body = {
-      "respCode": "1",
-      "respMsg": "提交成功"
-    };
+    const data = ctx.request.body;
+    const connection = connectionModel.getConnection();
+    const query = bluebird.promisify(connection.query.bind(connection));
+    // console.log('a'+JSON.stringify(data.params.managerId));
+    // console.log('content'+data.content)
+    //非选择题的总分
+    // const username = localStorage.userName;
+    const results = await query(
+      `insert into student_grade value(null,'${data.totalScore}',null,'${data.stuId}',null,'${data.username}','${data.classId}')`
+    );
+    console.log("result", JSON.stringify(results));
+    if (!results.length) {
+      ctx.body = {
+        respCode: 1,
+        results,
+        respMsg: '更新成功'
+      };
+    } else {
+      ctx.body = {
+        "respCode": "1",
+        "respMsg": "提交成功"
+      };
     }
-    	connection.end();
+    connection.end();
   } catch (e) {
     console.log('[/user/login] error:', e.message, e.stack);
-		ctx.body = {
-			respCode: e.code || -1,
-			respMsg: e.message
-		};
+    ctx.body = {
+      respCode: e.code || -1,
+      respMsg: e.message
+    };
   }
 };
 //修改教师
@@ -449,42 +449,55 @@ exports.search_papers = async function (ctx, next) {
     // 	connection.end();
   } catch (e) {
     console.log('[/user/login] error:', e.message, e.stack);
-		ctx.body = {
-			respCode: e.code || -1,
-			respMsg: e.message
-		};
+    ctx.body = {
+      respCode: e.code || -1,
+      respMsg: e.message
+    };
   };
 }
 //开始阅卷
 exports.auto_read = async function (ctx, next) {
   try {
-  //   	const data = ctx.request.body;
-  //   	const connection = connectionModel.getConnection();
-  //   	const query = bluebird.promisify(connection.query.bind(connection));
-  //   	// console.log('a'+JSON.stringify(data.params.managerId));
-  //   	// console.log('content'+data.content)
-  //   	const results = await query(
-  //           `update user set  name='${data.name}' id ='${data.id}' where
-  //   		 id='${data.old_id}'`
-  //       );
-  //       console.log("result",JSON.stringify(results));
-  //   	if(!results.length){
-  //   		ctx.body = {
-  //               respCode: 1,
-  //   			results,
-  //   			respMsg:'更新成功'
-  //   		};
-  //   	}else {
-    ctx.body = {
-      "respCode": "1"
-    };
-    // }
-    	// connection.end();
+    const data = ctx.request.body;
+    const connection = connectionModel.getConnection();
+    const query = bluebird.promisify(connection.query.bind(connection));
+    // console.log('a'+JSON.stringify(data.params.managerId));
+    // console.log('content'+data.content)
+    let auto_score = 0;
+    const results = await query(
+      `select question_id,answer from  student_answer where  student_no = '${data.stuId}' and  (question_type = '0' or question_type = '1' or question_type = '2')`
+    );
+    // results.map((item,index)=>{
+      for(let i =0;i<results.length;i++){
+        let answer =await query(
+          `select answer from question_insert where id = '${results[i].question_id}'`
+        )
+        console.log('answer'+JSON.stringify(answer));
+        if(results[i].answer == answer[0].answer){
+          auto_score +=2;
+          console.log('score'+auto_score)
+        }
+      }
+     
+    // })
+    console.log("result", JSON.stringify(results));
+    if (results.length) {
+      ctx.body = {
+        respCode: 1,
+        auto_score,
+        respMsg: '更新成功'
+      };
+    } else {
+      ctx.body = {
+        "respCode": "1"
+      };
+    }
+    connection.end();
   } catch (e) {
     console.log('[/user/login] error:', e.message, e.stack);
-		ctx.body = {
-			respCode: e.code || -1,
-			respMsg: e.message
-		};
+    ctx.body = {
+      respCode: e.code || -1,
+      respMsg: e.message
+    };
   }
 }
