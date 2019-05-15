@@ -11,11 +11,13 @@ exports.paperInfo= async function(ctx, next){
 		const connection = connectionModel.getConnection();
 		const query = bluebird.promisify(connection.query.bind(connection));
         let question = JSON.parse(data.paperInfo);
-        // console.log(JSON.parse(data.paperInfo).questionObjects)
+        console.log(JSON.parse(data.paperInfo).questionObjects)
             for(let i =0; i<question.questionObjects.length;i++){
                 for(let j in question.questionObjects[i].knowledgePointInfo){
-                    // console.log(question.questionObjects[i].knowledgePointInfo[j])
-                    const results = await query( `insert into exam_content values(null,'${exam_id}','${question.questionObjects[i].questionType}','${j}','${question.questionObjects[i].knowledgePointInfo[j]}','${question.questionObjects[i].score}',null,null)`)
+                    console.log('j'+j);
+                    console.log()
+                    console.log(question.questionObjects[i])
+                    const results = await query( `insert into exam_content values(null,'${exam_id}','${question.questionObjects[i].questionType}',${j},'${question.questionObjects[i].knowledgePointInfo[j]}',${question.questionObjects[i].score})`)
                 }
                    
             }

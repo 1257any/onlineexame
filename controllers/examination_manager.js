@@ -134,7 +134,7 @@ exports.get_stu_papers = async function (ctx, next) {
     const connection = connectionModel.getConnection();
     const query = bluebird.promisify(connection.query.bind(connection));
     const data = await query(
-      `select * from create_exam`
+      `select * from exam_content`
     );
     console.log('paperewtw' + JSON.stringify(data));
     if (data.length) {
@@ -195,7 +195,7 @@ exports.create_exam = async function (ctx, next) {
     )
     console.log("class" + JSON.stringify(class_id))
     const results = await query(
-      `insert into create_exam values(null,'${class_id[0].class_id}','${data.examName}','${data.classId}','${data.paperId}','${startTime}','${endTime}','${data.paperId}')`
+      `insert into create_exam values(null,'${class_id[0].class_id}','${data.examName}','${data.classId}','${data.paperId}','${startTime}','${endTime}','${data.paperId}',null,null)`
     );
     console.log("result", JSON.stringify(results));
     if (results.length) {

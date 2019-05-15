@@ -40,7 +40,7 @@ exports.get_question = async function (ctx, next) {
 						// console.log("把题目内容查出来"+JSON.stringify(sm_question))
 						for(let j =0 ;j<question[i].num;j++){
 							  sm_question = await query(
-								`select * from question_insert where knowlege_type ='${question[i].knowledge}' and question_type = '${question[i].question_type}'`
+								`select * from question_insert where knowlege_type ='${question[i].knowledge}' and question_type = '${question[i].question_type-1}'`
 						)
 							allquestion.push(sm_question[j])
 						}

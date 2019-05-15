@@ -268,7 +268,7 @@ class ScoringPaper extends React.Component {
         <span>
           {
             this.state.data[record.key].status ?
-            <Button type="primary" size="small" onClick={this.beginScoring.bind(this,record.key)}>开始阅卷</Button>:  <Button type="primary" disabled size="small">开始阅卷</Button>
+              <Button type="primary" disabled size="small">开始阅卷</Button>:<Button type="primary" size="small" onClick={this.beginScoring.bind(this,record.key)}>开始阅卷</Button>
           }
         </span>
       ),
