@@ -45,8 +45,8 @@ export const axiosLogin = function(body,success,error){
   .then((res)=>{
     success(res);
   })
-  .catch(function (err) {e
+  .catch(function (err) {
       error(err);
   });
 }
-// test et2eeweeee
+// test et2eewe
